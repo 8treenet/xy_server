@@ -1,0 +1,5 @@
+注册 gen_server:cast(login_server,{player_recv,self(), 10000 ,{<<"4932004@qq.com">>,<<"36469805">>}}).
+
+登陆 gen_server:cast(login_server,{player_recv,self(), 10001 ,{<<"4932004@qq.com">>,<<"36469805">>,"127.0.0.1"}}).
+
+分区信息 gen_server:cast(login_server,{player_recv,self(), 10002 ,{}}).
