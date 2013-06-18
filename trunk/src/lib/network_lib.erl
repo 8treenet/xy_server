@@ -60,4 +60,4 @@ accept(Listen,LogicNode,NodeName)->
 			ok
 	end.
 send(PID, Data)->
-	PID !Data.
+	PID !{tcp_send,Data}.
