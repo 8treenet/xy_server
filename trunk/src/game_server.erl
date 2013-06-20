@@ -31,7 +31,6 @@
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
 init([]) ->
-	game_data_init:start(),
 	process_flag(trap_exit, true),
     {ok, #state{gateway_node=undefined}}.
 
@@ -70,6 +69,7 @@ handle_call(Request, From, State) ->
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================\
 handle_cast({player_recv, PID, Index ,Data}, State) ->
+	gameServer_mod:process([PID, Index ,Data]),
     {noreply, State};
 handle_cast({player_error, Pid}, State) ->
     {noreply, State};

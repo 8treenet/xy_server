@@ -64,4 +64,20 @@ xy_actor.actor_grade FROM xy_actor WHERE xy_actor.actor_user = '~p'">>, [User#on
 	ok.
 
 create_actor([PID, PName, VT, Sex]) ->
+	case ets:lookup(?ETS_ONLINE_USER, PID) of
+		[] ->
+			ok;
+		[User]-> 
+			CountSql = io_lib:format(<<"SELECT Count(*) FROM `xy_actor` WHERE actor_pname= '~s'">>, [PName]),
+			case mysql_lib:recv(CountSql, ?DB_GAME) of
+				 [[0]] ->
+					 ID = integer_to_list(number_mod:create_actor_id()),
+				   	 Sql = game_data_1:get_actor_birth_sql(User, ID, PName, Sex, VT),
+					 mysql_lib:write(Sql, ?DB_GAME),
+					 game_server:send(PID, <<10005:32, 1:8>>);
+				   _ ->
+					  game_server:send(PID, <<10005:32, 2:8>>)
+				end
+			
+		end,
 	ok.
