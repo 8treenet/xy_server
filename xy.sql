@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50162
 File Encoding         : 65001
 
-Date: 2013-06-20 16:06:46
+Date: 2013-06-20 18:35:58
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -27,9 +27,9 @@ CREATE TABLE `xy_actor` (
   `actor_sex` tinyint(4) NOT NULL COMMENT '角色性别',
   `actor_grade` int(11) NOT NULL COMMENT '角色等级',
   `actor_num` int(11) NOT NULL COMMENT '加点次数',
-  `actor_blood_num` int(11) NOT NULL COMMENT '气血点数',
-  `actor_intelligence_num` int(11) NOT NULL COMMENT '灵性点数',
-  `actor_agile_num` int(11) NOT NULL COMMENT '敏捷点数',
+  `actor_blood_num` int(11) NOT NULL COMMENT '气血属性',
+  `actor_intelligence_num` int(11) NOT NULL COMMENT '灵性属性',
+  `actor_agile_num` int(11) NOT NULL COMMENT '敏捷属性',
   `actor_strength_num` int(11) NOT NULL COMMENT '力量属性',
   `actor_attack_min` int(11) NOT NULL COMMENT ' 攻击力最小值',
   `actor_attack_max` int(11) NOT NULL COMMENT '攻击力最大值',
@@ -39,7 +39,7 @@ CREATE TABLE `xy_actor` (
   `actor_mdefense` int(11) NOT NULL COMMENT '魔防',
   `actor_hit` int(11) NOT NULL COMMENT '命中',
   `actor_dodge` int(11) NOT NULL COMMENT '躲闪',
-  `actor_crit` int(11) NOT NULL,
+  `actor_crit` int(11) NOT NULL COMMENT '暴击',
   `actor_speed` int(11) NOT NULL COMMENT '角色行动速度',
   `actor_hp_max` int(11) NOT NULL COMMENT '角色血值',
   `actor_hp` int(11) NOT NULL COMMENT '角色当前血量',

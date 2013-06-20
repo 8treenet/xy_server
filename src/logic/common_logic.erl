@@ -72,11 +72,11 @@ create_actor([PID, PName, VT, Sex]) ->
 			case mysql_lib:recv(CountSql, ?DB_GAME) of
 				 [[0]] ->
 					 ID = integer_to_list(number_mod:create_actor_id()),
-				   	 Sql = game_data_1:get_actor_birth_sql(User, ID, PName, Sex, VT),
+				   	 Sql = game_data_1:get_actor_birth_sql(User#online_user.user, ID, PName, Sex, VT),
 					 mysql_lib:write(Sql, ?DB_GAME),
 					 game_server:send(PID, <<10005:32, 1:8>>);
 				   _ ->
-					  game_server:send(PID, <<10005:32, 2:8>>)
+					 game_server:send(PID, <<10005:32, 2:8>>)
 				end
 			
 		end,

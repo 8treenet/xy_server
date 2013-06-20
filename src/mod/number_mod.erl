@@ -13,7 +13,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_link/1, create_actor_id/0, create_goods_id/0, create_random/1]).
+-export([start_link/1, create_actor_id/0, create_goods_id/0, create_random/2]).
 
 
 
@@ -68,9 +68,10 @@ handle_call(2, From, State) ->
     NewState = State#state{goods_sequence = Reply+1},
     {reply, Reply, NewState};
 
-handle_call({3,Max}, From, State) ->
-	 Reply = random:uniform(Max),
+handle_call({3, Min, Max}, From, State) ->
+	 Reply = round(random:uniform()*(Max-Min)+Min),
 	 {reply, Reply, State};
+
 handle_call(Request, From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -133,9 +134,6 @@ code_change(OldVsn, State, Extra) ->
     {ok, State}.
 
 
-%% ====================================================================
-%% Internal functions
-%% ====================================================================
 start_link(StartArgs)->
 	gen_server:start({local,?MODULE}, ?MODULE, StartArgs, []).
 
@@ -144,5 +142,6 @@ create_actor_id()->
 
 create_goods_id()->
 	gen_server:call(?MODULE, 2).
-create_random(Max)->
-	gen_server:call(?MODULE, {3, Max}).
+
+create_random(Min, Max)->
+	gen_server:call(?MODULE, {3,Min,Max}).
