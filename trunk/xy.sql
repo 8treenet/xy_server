@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50162
 File Encoding         : 65001
 
-Date: 2013-06-18 12:07:25
+Date: 2013-06-20 13:17:04
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,7 +26,9 @@ CREATE TABLE `xy_actor` (
   `actor_vocational` tinyint(4) NOT NULL,
   `actor_sex` tinyint(4) NOT NULL,
   `actor_grade` int(11) NOT NULL,
+  `actor_hp_max` int(11) NOT NULL,
   `actor_hp` int(11) NOT NULL,
+  `actor_mp_max` int(11) NOT NULL,
   `actor_mp` int(11) NOT NULL,
   `actor_exp` int(11) NOT NULL,
   `actor_money` varchar(32) NOT NULL,
