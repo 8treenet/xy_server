@@ -31,8 +31,9 @@ start(Type, StartArgs) ->
     case logic_sup:start_link() of
 		{ok, Pid} ->
 			[LocalPW,LoginHost,LoginPW]=StartArgs,
-			
+			game_init:start(LocalPW, LoginHost, LoginPW),
 			logic_sup:start_child(game_server, []),
+			logic_sup:start_child(number_mod, []),
 			{ok, Pid};
 		Error ->
 			Error

@@ -28,6 +28,12 @@ cmd(_bin, _socket)->
 			  {_index, get(_index, _bin2, _socket)}
 	end.
 
+%%解析创建角色
+%%返回{}
+get(10005, _bin, Socket)->
+	<<_nameSize:8, PName:_nameSize/binary, VT:8, Sex:8>> = _bin,
+	 {PName, VT, Sex};
+
 %%解析角色列表
 %%返回{}
 get(10004, _bin, Socket)->

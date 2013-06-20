@@ -3,7 +3,7 @@
 %%% @Author  : ys
 %%% @Email   : 4932004@qq.com
 %%% @Created : 2013.06.20
-%%% @Description: 分配sequence和随机数等
+%%% @Description: 分配id和随机数等
 %%%--------------------------------------
 
 -module(number_mod).
@@ -13,7 +13,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_link/0]).
+-export([start_link/1, create_actor_id/0, create_goods_id/0, create_random/1]).
 
 
 
@@ -36,8 +36,8 @@
 %% ====================================================================
 init([]) ->
 	random:seed(now()),
-	ActorSequence = config_data:get(actor_sequence),
-	GoodsSequence = config_data:get(goods_sequence),
+	ActorSequence = config_data:read(actor_sequence),
+	GoodsSequence = config_data:read(goods_sequence),
     {ok, #state{actor_sequence = ActorSequence, goods_sequence = GoodsSequence}}.
 
 
@@ -58,9 +58,19 @@ init([]) ->
 	Timeout :: non_neg_integer() | infinity,
 	Reason :: term().
 %% ====================================================================
-handle_call(actor, From, State) ->
-    Reply = ok,
-    {reply, Reply, State};
+handle_call(1, From, State) ->
+    Reply = State#state.actor_sequence,
+	NewState = State#state{actor_sequence = Reply+1},
+    {reply, Reply, NewState};
+
+handle_call(2, From, State) ->
+    Reply = State#state.goods_sequence,
+    NewState = State#state{goods_sequence = Reply+1},
+    {reply, Reply, NewState};
+
+handle_call({3,Max}, From, State) ->
+	 Reply = random:uniform(Max),
+	 {reply, Reply, State};
 handle_call(Request, From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -106,6 +116,8 @@ handle_info(Info, State) ->
 			| term().
 %% ====================================================================
 terminate(Reason, State) ->
+	config_data:save(actor_sequence, State#state.actor_sequence),
+	config_data:save(actor_sequence, State#state.goods_sequence),
     ok.
 
 
@@ -124,6 +136,13 @@ code_change(OldVsn, State, Extra) ->
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
-start_link()->
-	gen_server:start({local,?MODULE}, ?MODULE, [], []).
+start_link(StartArgs)->
+	gen_server:start({local,?MODULE}, ?MODULE, StartArgs, []).
 
+create_actor_id()->
+	gen_server:call(?MODULE, 1).
+
+create_goods_id()->
+	gen_server:call(?MODULE, 2).
+create_random(Max)->
+	gen_server:call(?MODULE, {3, Max}).
