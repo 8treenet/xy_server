@@ -65,11 +65,11 @@ handle_call(1, From, State) ->
 
 handle_call(2, From, State) ->
     Reply = State#state.goods_sequence,
-    NewState = State#state{goods_sequence = Reply+1},
+    NewState = State#state{goods_sequence = Reply + 1},
     {reply, Reply, NewState};
 
 handle_call({3, Min, Max}, From, State) ->
-	 Reply = round(random:uniform()*(Max-Min)+Min),
+	 Reply = round(random:uniform() * (Max - Min) + Min),
 	 {reply, Reply, State};
 
 handle_call(Request, From, State) ->

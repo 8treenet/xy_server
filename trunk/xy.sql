@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50162
 File Encoding         : 65001
 
-Date: 2013-06-20 18:35:58
+Date: 2013-06-21 09:38:38
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -40,6 +40,8 @@ CREATE TABLE `xy_actor` (
   `actor_hit` int(11) NOT NULL COMMENT '命中',
   `actor_dodge` int(11) NOT NULL COMMENT '躲闪',
   `actor_crit` int(11) NOT NULL COMMENT '暴击',
+  `actor_attack_addition` int(11) NOT NULL COMMENT '攻击加成',
+  `actor_mattack_addition` int(11) DEFAULT NULL COMMENT '魔法攻击加成',
   `actor_speed` int(11) NOT NULL COMMENT '角色行动速度',
   `actor_hp_max` int(11) NOT NULL COMMENT '角色血值',
   `actor_hp` int(11) NOT NULL COMMENT '角色当前血量',
