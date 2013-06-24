@@ -20,3 +20,4 @@
 -define(DB_GAME, db_game).                     			     %%游戏数据库连接标示
 -define(CONFIG_ACTORR_SEQUENCE, 1).             			 %%当前分配角色ID序列号
 -define(CONFIG_GOODS_SEQUENCE, 1).              			 %%当前分配物品ID序列号
+
