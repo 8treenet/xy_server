@@ -20,7 +20,8 @@ cmd:10002                   int:4
 cmd:10003
 用户名长度                                                   int:1
 用户名                                                           string:用户名长度
-
+SessionKey长度                                      int:1
+SessionKey                  string:SessionKey长度      
 
 请求角色列表
 cmd:10004                    int:4
@@ -32,3 +33,9 @@ cmd:10005					 int:4
 昵称                                                                 string:昵称长度
 职业                                                                 int:1
 性别                                                                 int:1
+
+请求进入游戏
+cmd:10006					 int:4
+角色ID                        int:4
+
+

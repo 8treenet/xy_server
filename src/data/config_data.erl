@@ -16,9 +16,6 @@
 
 
 
-%% ====================================================================
-%% Internal functions
-%% ====================================================================
 
 
 %%读取数据库中的角色序列号
@@ -39,6 +36,15 @@ read(goods_sequence)->
 			 error_logger:format("goods_sequence = null");
 		 [[Value]] ->
 			 list_to_integer(binary_to_list(Value))
+	end;
+%%读取数据库中的宠物序列号
+read(pet_sequence)->
+	Sql = io_lib:format(<<"SELECT config_value FROM xy_config WHERE config_id = '~p'">>,[?CONFIG_PET_SEQUENCE]),
+	case mysql_lib:recv(Sql, ?DB_GAME) of
+		 [] ->
+			 error_logger:format("pet_sequence = null");
+		 [[Value]] ->
+			 list_to_integer(binary_to_list(Value))
 	end.
 
 %%角色序列号保存到数据库
@@ -51,4 +57,10 @@ save(actor_sequence, Number)->
 save(goods_sequence, Number)->
 	StringNumber = integer_to_list(Number),
 	Sql = io_lib:format(<<"UPDATE `xy_config` SET `config_value`='~s' WHERE (`config_id`='~p')">>, [StringNumber, ?CONFIG_GOODS_SEQUENCE]),
+	mysql_lib:write(Sql, ?DB_GAME);
+
+%%物品序列号保存到数据库
+save(pet_sequence, Number)->
+	StringNumber = integer_to_list(Number),
+	Sql = io_lib:format(<<"UPDATE `xy_config` SET `config_value`='~s' WHERE (`config_id`='~p')">>, [StringNumber, ?CONFIG_PET_SEQUENCE]),
 	mysql_lib:write(Sql, ?DB_GAME).

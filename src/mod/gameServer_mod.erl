@@ -22,6 +22,9 @@
 process([PID, Index, Data])->
 	process(Index,PID, Data).
 
+process(10005, PID, {ID})->
+    spawn(common_logic, enter_game,[PID, ID]);
+
 process(10005, PID, {PName, VT, Sex})->
     spawn(common_logic, create_actor,[PID, PName, VT, Sex]);
 

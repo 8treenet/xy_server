@@ -13,14 +13,14 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_link/1, create_actor_id/0, create_goods_id/0, create_random/2]).
+-export([start_link/1, create_actor_id/0, create_goods_id/0, create_random/2,create_pet_id/0]).
 
 
 
 %% ====================================================================
 %% Behavioural functions 
 %% ====================================================================
--record(state, {actor_sequence=undefined, goods_sequence=undefined}).
+-record(state, {actor_sequence=undefined, goods_sequence=undefined, pet_sequence=undefined}).
 
 %% init/1
 %% ====================================================================
@@ -35,10 +35,12 @@
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
 init([]) ->
+	process_flag(trap_exit, true),
 	random:seed(now()),
 	ActorSequence = config_data:read(actor_sequence),
 	GoodsSequence = config_data:read(goods_sequence),
-    {ok, #state{actor_sequence = ActorSequence, goods_sequence = GoodsSequence}}.
+	PetSequence = config_data:read(pet_sequence),
+    {ok, #state{actor_sequence = ActorSequence, goods_sequence = GoodsSequence, pet_sequence = PetSequence}}.
 
 
 %% handle_call/3
@@ -66,6 +68,11 @@ handle_call(1, From, State) ->
 handle_call(2, From, State) ->
     Reply = State#state.goods_sequence,
     NewState = State#state{goods_sequence = Reply + 1},
+    {reply, Reply, NewState};
+
+handle_call(4, From, State) ->
+    Reply = State#state.pet_sequence,
+    NewState = State#state{pet_sequence = Reply + 1},
     {reply, Reply, NewState};
 
 handle_call({3, Min, Max}, From, State) ->
@@ -118,7 +125,8 @@ handle_info(Info, State) ->
 %% ====================================================================
 terminate(Reason, State) ->
 	config_data:save(actor_sequence, State#state.actor_sequence),
-	config_data:save(actor_sequence, State#state.goods_sequence),
+	config_data:save(goods_sequence, State#state.goods_sequence),
+	config_data:save(pet_sequence,   State#state.pet_sequence),
     ok.
 
 
@@ -142,6 +150,9 @@ create_actor_id()->
 
 create_goods_id()->
 	gen_server:call(?MODULE, 2).
+
+create_pet_id()->
+	gen_server:call(?MODULE, 4).
 
 create_random(Min, Max)->
 	gen_server:call(?MODULE, {3,Min,Max}).

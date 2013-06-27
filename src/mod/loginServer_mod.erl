@@ -59,7 +59,7 @@ process(10001,PID,{Name, PW, Addr})->
 			end,
 	if
 		Logic == true ->
-						Sql9 = io_lib:format(<<"SELECT xy_user.user_online FROM xy_user WHERE xy_user.user_name = '~s' AND xy_user.user_password = '~s'" >>,[Name,PW]),
+						Sql9 = io_lib:format(<<"SELECT xy_user.user_id FROM xy_user WHERE xy_user.user_name = '~s' AND xy_user.user_password = '~s'" >>,[Name,PW]),
 									case mysql_lib:recv(Sql9, ?DB_USER) of
 										[] -> 
 											io:format("login password error~n"),
@@ -67,20 +67,16 @@ process(10001,PID,{Name, PW, Addr})->
 											Sql33 = io_lib:format(<<"INSERT INTO `xy_ip` (`ip_addr`) VALUES ('~s')">>, [Addr]),
 											mysql_lib:write(Sql33, ?DB_USER);
 											
-										[[Online]]  -> 
-											if
-												Online == <<"true">> ->
-													network_lib:send(PID, <<10000:32, 5:8>>);
-												true ->
+										[[User_id]]  -> 
 													io:format("login ok~n"),
 													{_, _, Key} = now(),
 													Time = integer_to_list(system_data:get(second)),
 													SessionKey = system_data:md5(integer_to_list(Key)),
 													SessionKeyBin = system_data:format_Binary(8, list_to_binary(SessionKey)),
-													Sql22 = io_lib:format(<<"UPDATE `xy_user` SET `user_key`='~s', `user_login_time` = '~s' `user_online` = '~s'  WHERE `user_name` = '~s'">>, [SessionKey, Time, "true", Name]),
+													Sql22 = io_lib:format(<<"UPDATE `xy_user` SET `user_key`='~s', `user_login_time` = '~s'   WHERE `user_name` = '~s'">>, [SessionKey, Time, Name]),
 													mysql_lib:write(Sql22, ?DB_USER),
 													network_lib:send(PID, <<10000:32, 1:8, SessionKeyBin/binary>>)
-											end
+											
 										end;
 		true ->
 			ok
