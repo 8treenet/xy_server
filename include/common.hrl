@@ -20,7 +20,5 @@
 %%config信息ID
 -define(DB_USER, db_user).                      			 %%用户数据库连接标示
 -define(DB_GAME, db_game).                     			     %%游戏数据库连接标示
--define(CONFIG_ACTORR_SEQUENCE, 1).             			 %%当前分配角色ID序列号
--define(CONFIG_GOODS_SEQUENCE, 2).              			 %%当前分配物品ID序列号
--define(CONFIG_PET_SEQUENCE, 3).              		    	 %%当前分配宠物ID序列号
+
 

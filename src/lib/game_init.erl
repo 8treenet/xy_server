@@ -8,7 +8,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start/3]).
+-export([start/0]).
 
 
 
@@ -17,9 +17,8 @@
 %% ====================================================================
 
 
-start(LocalPW,LoginHost,LoginPW)->
-	mysql_lib:conn(?DB_GAME, "localhost", LocalPW),                     %%连接游戏数据
-	mysql_lib:conn(?DB_USER,  LoginHost, LoginPW),                      %%连接用户数据库
+start()->
+
 	ets:new(?ETS_ONLINE_USER, [public, set, named_table, 
 							  {keypos,#online_user.pid}, 
 							  {write_concurrency,true},
@@ -36,5 +35,6 @@ start(LocalPW,LoginHost,LoginPW)->
 							  {keypos,#actor_pid.id}, 
 							  {write_concurrency,true},
 							  {read_concurrency,true}]),                 %%初始化角色对应pid
+	config_data:init(),
 	ok.
 	

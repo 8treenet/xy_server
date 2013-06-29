@@ -36,7 +36,7 @@
 %% ====================================================================
 init([LogicNode,Port]) ->
 	process_flag(trap_exit, true),
-	gen_server:cast({game_server,LogicNode},{register_gateway, node()}),
+	gen_server:cast({gateway_mod,LogicNode},{register_gateway, node()}),
 	network_lib:start([LogicNode,Port,game_server]),
     {ok, #state{}}.
 

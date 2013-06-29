@@ -35,19 +35,19 @@
 	Modules :: [module()] | dynamic.
 %% ====================================================================
 init([]) ->
-    AChild = {'AName',{'AModule',start_link,[]},
-	      permanent,2000,worker,['AModule']},
-    {ok,{{one_for_one,0,1}, []}}.
+    AChild = {game_server,{game_server,start_link,[["36469805","localhost","36469805"]]},
+	      permanent,2000,worker,[game_server]},
+    {ok,{{one_for_one,1,60}, []}}.
 
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
 start_link()->
-	supervisor:start_link(?MODULE,[]).
+	supervisor:start_link({local,?MODULE},?MODULE,[]).
 
 %%加入监控的server模块,
 %%server模块名,参数
 start_child(Server,Permanent)->
 	supervisor:start_child(?MODULE, {Server,{Server,start_link,[Permanent]},
-	      temporary,2000,worker,[Server]}).
+	      temporary,infinity,worker,[Server]}).

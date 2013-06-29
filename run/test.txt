@@ -3,3 +3,8 @@
 登陆 gen_server:cast(login_server,{player_recv,self(), 10001 ,{<<"4932004@qq.com">>,<<"36469805">>,"127.0.0.1"}}).
 
 分区信息 gen_server:cast(login_server,{player_recv,self(), 10002 ,{}}).
+
+登陆游戏服务器gen_server:cast(game_server,{player_recv,self(), 10003,{"4932004@qq.com",<<"aed6bffa1c0dcc5bb1c81eefabdf60ab">>}}).
+返回角色  gen_server:cast(game_server,{player_recv,self(), 10004 ,{}}).
+创建角色  gen_server:cast(game_server,{player_recv,self(), 10005 ,{"yangshu",2,1}}).
+进入游戏  gen_server:cast(game_server,{player_recv,self(), 10006 ,{1}}).

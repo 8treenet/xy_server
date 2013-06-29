@@ -243,7 +243,7 @@ start1(PoolId, Host, Port, User, Password, Database, LogFun, Encoding,
        StartFunc) ->
     crypto:start(),
     gen_server:StartFunc(
-      {local, ?SERVER}, ?MODULE,
+      {local, PoolId}, ?MODULE,
       [PoolId, Host, Port, User, Password, Database, LogFun, Encoding], []).
 
 
@@ -640,7 +640,12 @@ with_next_conn(PoolId, State, Fun) ->
 	    %% we have no active connection matching PoolId
 	    {reply, {error, {no_connection_in_pool, PoolId}}, State}
     end.
-
+call_server({fetch, PoolId, Query}, Timeout) ->
+	if Timeout == undefined ->
+	    gen_server:call(PoolId, {fetch, PoolId, Query});
+       true ->
+	    gen_server:call(PoolId, {fetch, PoolId, Query}, Timeout)
+    end;
 call_server(Msg, Timeout) ->
     if Timeout == undefined ->
 	    gen_server:call(?SERVER, Msg);

@@ -5,6 +5,7 @@
 -module(game_app).
 -behaviour(application).
 -export([start/2, stop/1]).
+-include("common.hrl").
 -include("record.hrl").
 
 %% ====================================================================
@@ -28,12 +29,13 @@
 %% ====================================================================
 %%应用程序启动参数 StartArgs=[本机数据库密码,登陆数据库IP,登陆数据库密码,网关节点]
 start(Type, StartArgs) ->
-    case logic_sup:start_link() of
+	[LocalPW, LoginHost, LoginPW] = StartArgs,
+	mysql_lib:conn(?DB_GAME, "localhost", "36469805"),                     %%连接游戏数据
+	mysql_lib:conn(?DB_USER, LoginHost, LoginPW),                        %%连接用户数据库
+    case game_sup:start_link() of
 		{ok, Pid} ->
-			[LocalPW,LoginHost,LoginPW]=StartArgs,
-			game_init:start(LocalPW, LoginHost, LoginPW),
-			logic_sup:start_child(game_server, []),
-			logic_sup:start_child(number_mod, []),
+			  game_sup:start_child(game_server, []),
+		      %%game_sup:start_child(test_server, []),
 			{ok, Pid};
 		Error ->
 			Error
