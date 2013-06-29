@@ -23,7 +23,7 @@
 %%CONN_NAME=连接名,HOST=IP,PASS=密码, DB_NAME=数据库名称
 conn(CONN_NAME, HOST, PASS)->
 		mysql:start_link(CONN_NAME, HOST, ?DB_PORT, ?DB_USER, PASS, ?DB_NAME,fun(_, _, _, _) -> ok end).
-
+		
 
 
 %%写入数据库 

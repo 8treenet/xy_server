@@ -1,15 +1,15 @@
 %% @author Administrator
-%% @doc @todo Add description to game_server.
+%% @doc @todo Add description to gateway_mod.
 
 
--module(game_server).
+-module(gateway_mod).
 -behaviour(gen_server).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_link/1,send/2]).
+-export([]).
 
 
 
@@ -31,10 +31,7 @@
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
 init([]) ->
-	process_flag(trap_exit, true),
-	game_init:start(),
-	io:format("game_server run~n"),
-    {ok, #state{}}.
+    {ok, undefined}.
 
 
 %% handle_call/3
@@ -70,14 +67,11 @@ handle_call(Request, From, State) ->
 	NewState :: term(),
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
-handle_cast({player_recv, PID, Index ,Data}, State) ->
-	gameServer_mod:process([PID, Index ,Data]),
+handle_cast({player_send, PID, Bin}, State) ->
+    gen_server:cast({gateway_server,State}, {player_send,PID,Bin}),
     {noreply, State};
-handle_cast({player_error, Pid}, State) ->
-    {noreply, State};
-handle_cast({player_close, Pid}, State) ->
-    {noreply, State};
-
+handle_cast({register_gateway, Node}, State) ->
+    {noreply, Node};
 handle_cast(Msg, State) ->
     {noreply, State}.
 
@@ -107,8 +101,6 @@ handle_info(Info, State) ->
 			| term().
 %% ====================================================================
 terminate(Reason, State) ->
-	game_save:start(),
-	io:format("game_server quit~n"),
     ok.
 
 
@@ -123,12 +115,10 @@ terminate(Reason, State) ->
 code_change(OldVsn, State, Extra) ->
     {ok, State}.
 
-start_link(Args) ->
-	gen_server:start_link({local,?MODULE}, ?MODULE, Args, []).
-send(PID, Bin)->
-	gen_server:cast(gateway_mod, {player_send, PID, Bin}).
+
 %% ====================================================================
 %% Internal functions
 %% ====================================================================
 
-
+start_link(Args) ->
+	gen_server:start_link({local,?MODULE}, ?MODULE, Args, []).

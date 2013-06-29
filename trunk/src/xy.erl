@@ -12,7 +12,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start_gateway/0, start_logic/0, start_login/0]).
+-export([start_gateway/0, start_game/0, start_login/0]).
 
 
 
@@ -23,7 +23,7 @@
 
 start_gateway()->
 	application:start(gateway).
-start_logic()->
-	application:start(logic).
+start_game()->
+	application:start(game).
 start_login()->
 	application:start(login).

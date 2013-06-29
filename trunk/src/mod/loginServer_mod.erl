@@ -29,6 +29,7 @@ process(10002,PID,{})->
 	ListData = [lm_1(ID, Name, Addrs, Number) || [ID, Name, Addrs, Number]<-List],
 	Data = list_to_binary(ListData),
 	network_lib:send(PID, <<10002:32,Data/binary>>),
+	io:format("server list:~p~n",[List]),
 	ok;
 
 %%登陆

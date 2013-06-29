@@ -12,7 +12,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([login/1,get_actor/1,create_actor/1]).
+-export([login/1,get_actor/1,create_actor/1,enter_game/1]).
 
 
 
@@ -20,23 +20,30 @@
 %% Internal functions
 %% ====================================================================
 login([PID, Name, SessionKey]) ->
-	Sql = io:format(<<"SELECT * FROM xy_user WHERE user_name = '~s'">>, [Name]),
+	io:format("1~n"),
+	Sql = io_lib:format(<<"SELECT * FROM xy_user WHERE user_name = '~s'">>, [Name]),
+	io:format("2:~p~n",[Sql]),
 	case mysql_lib:recv(Sql, ?DB_USER) of
 		 [] -> 
+			 io:format("2~n"),
 			 game_server:send(PID, <<10003:32,2:8>>);
 		 [[_, _, _, _,Status, Key, _, Time]|_] ->
+			 io:format("3~n"),
  			 CurrentTime = system_data:get(second),
  			 UserTime = list_to_integer(binary_to_list(Time)),
 			 Sec = CurrentTime - UserTime,
 			 CheckLogin = ets:match(?ETS_ONLINE_USER, #online_user{pid='$1', user=Name}),
 			 if 
 				CheckLogin /= [] ->
+					  io:format("login user_online  ~n"),
 					  game_server:send(PID, <<10003:32,2:8>>); 		
-				(Status == 1) and (Key == SessionKey) and ((Sec < 180) and (Sec > 0)) ->
+				(Status == 1) and (Key == SessionKey) and ((Sec < 1800) and (Sec > 0)) ->
 					 User = #online_user{pid=PID, user=Name},
 					 ets:insert(?ETS_ONLINE_USER, User),
+					 io:format("login ok~n"),
 					 game_server:send(PID, <<10003:32,1:8>>);
 				true->
+					io:format("login user_error status:~p key:~p sec:~p ~n",[Status,Key,Sec]),
 					 game_server:send(PID, <<10003:32,2:8>>)
 			 end
 		end,
@@ -50,16 +57,20 @@ get_actor([PID]) ->
 			  end,
 	case ets:lookup(?ETS_ONLINE_USER, PID) of
 		[] ->
+			io:format("user_error,get_actor1~n"),
 			ok;
 		[User]->
-			Sql = io:format(<<"SELECT xy_actor.actor_id, xy_actor.actor_pname, xy_actor.actor_vocational, xy_actor.actor_sex,
-xy_actor.actor_grade actor_image FROM xy_actor WHERE xy_actor.actor_user = '~p'">>, [User#online_user.user]),
+			Sql = io_lib:format(<<"SELECT xy_actor.actor_id, xy_actor.actor_pname, xy_actor.actor_vocational, xy_actor.actor_sex,
+xy_actor.actor_grade actor_image FROM xy_actor WHERE xy_actor.actor_user = '~s'">>, [User#online_user.user]),
+			io:format("get_actor sql:~s~n",[Sql]),
 			case mysql_lib:recv(Sql, ?DB_GAME) of
 				 [] -> 
+					 io:format("get_actor:0~n"),
 					 game_server:send(PID, <<10004:32>>);
 				 List ->
 					 ListData = [Packet(ID, PName, VT, Sex, Grade,Image) || [ID, PName, VT, Sex, Grade, Image] <-List],
 					 ListBin  = list_to_binary(ListData),
+					 io:format("get_actor:~p~n",[List]),
 					 game_server:send(PID, <<10004:32, ListBin/binary>>)
 				end
 		end,
@@ -71,14 +82,22 @@ create_actor([PID, PName, VT, Sex]) ->
 		[] ->
 			ok;
 		[User]-> 
-			CountSql = io_lib:format(<<"SELECT Count(*) FROM `xy_actor` WHERE actor_pname= '~s'">>, [PName]),
-			case mysql_lib:recv(CountSql, ?DB_GAME) of
-				 [[0]] ->
-					 ID = number_mod:create_actor_id(),
+			CountPNameSql = io_lib:format(<<"SELECT Count(*) FROM `xy_actor` WHERE actor_pname= '~s'">>, [PName]),
+			[[PNameCount]] = mysql_lib:recv(CountPNameSql, ?DB_GAME),
+			CountActorSql = io_lib:format(<<"SELECT Count(*) FROM `xy_actor` WHERE actor_user= '~s'">>, [User#online_user.user]),
+			[[ActorCount]] = mysql_lib:recv(CountActorSql, ?DB_GAME),
+			case {PNameCount, ActorCount} of
+				 {_, 4} ->
+					  io:format("create actor max ok~n"),
+					  game_server:send(PID, <<10005:32, 3:8>>);
+				 {0, _} ->
+					 ID = config_data:read(actor_sequence),
 				   	 Sql = game_data_1:get_actor_birth_sql(User#online_user.user, ID, PName, Sex, VT),
 					 mysql_lib:write(Sql, ?DB_GAME),
+					 io:format("create actor ok~n"),
 					 game_server:send(PID, <<10005:32, 1:8>>);
 				   _ ->
+					  io:format("create pname error~n"),
 					 game_server:send(PID, <<10005:32, 2:8>>)
 				end
 			
@@ -89,14 +108,17 @@ create_actor([PID, PName, VT, Sex]) ->
 enter_game([PID, Actor_ID]) ->
 	case ets:lookup(?ETS_ONLINE_USER, PID) of
 		[] ->
+			io:format("error enter_game1~n"),
 			ok;
 		[User]-> 
-			ReadActor = io_lib:format(<<"SELECT * FORM `xy_actor` WHERE actor_user='~s' and  actor_id='~p'">>, [User,Actor_ID]),
+			ReadActor = io_lib:format(<<"SELECT * FROM xy_actor WHERE actor_id = '~p' AND  actor_user='~s'">>, [Actor_ID, User#online_user.user]),
+			io:format("~s~n",[ReadActor]),
 			case mysql_lib:recv(ReadActor, ?DB_GAME) of
 				 [] ->
+					 io:format("error enter_game2~n"),
 					 game_server:send(PID, <<10005:32, 2:8>>);
 				 [ActorList|_] ->
 						actor_mod:enter([PID,ActorList])
-				end
+			end
 		end,
 	ok.

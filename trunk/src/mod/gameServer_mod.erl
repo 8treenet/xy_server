@@ -22,16 +22,16 @@
 process([PID, Index, Data])->
 	process(Index,PID, Data).
 
-process(10005, PID, {ID})->
-    spawn(common_logic, enter_game,[PID, ID]);
+process(10006, PID, {ID})->
+    spawn(fun()->common_logic:enter_game([PID, ID])end);
 
 process(10005, PID, {PName, VT, Sex})->
-    spawn(common_logic, create_actor,[PID, PName, VT, Sex]);
+    spawn(fun()-> common_logic:create_actor([PID, PName, VT, Sex]) end);
 
 process(10003, PID, {Name, SessionKey}) ->
-	spawn(common_logic, login, [PID, Name, SessionKey]),
+	spawn(fun()-> common_logic:login([PID, Name, SessionKey]) end),
 	ok;
 
 process(10004, PID, _) ->
-	spawn(common_logic, get_actor, [PID]),
+	spawn(fun()-> common_logic:get_actor([PID]) end),
 	ok.
