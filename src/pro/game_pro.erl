@@ -6,7 +6,7 @@
 %%% @Description: 处理通用功能
 %%%--------------------------------------
 
--module(common_logic).
+-module(game_pro).
 -include("common.hrl").
 -include("record.hrl").
 %% ====================================================================

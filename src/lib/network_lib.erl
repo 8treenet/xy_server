@@ -50,6 +50,7 @@ loop(Session,LogicNode,NodeName) ->
 			gen_tcp:close(Session)
 	end.
 
+%%新连接
 accept(Listen,LogicNode,NodeName)->
 	case gen_tcp:accept(Listen) of
 		{ok, Session} ->
@@ -59,5 +60,6 @@ accept(Listen,LogicNode,NodeName)->
 		_ ->
 			ok
 	end.
+
 send(PID, Data)->
 	PID !{tcp_send,Data}.

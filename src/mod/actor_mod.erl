@@ -8,7 +8,7 @@
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([enter/1]).
+-export([enter/1, leave/1]).
 
 
 
@@ -75,53 +75,9 @@ enter([PID,ActorList]) ->
 					   (Actor#online_actor.money):32,(Actor#online_actor.faction):32,(Actor#online_actor.image):32,
 					   (Actor#online_actor.head):32,(Actor#online_actor.spouse):32,(Actor#online_actor.gold):32>>,
 	io:format("enter game actor:~p~n",[Actor]),
-	ReadPet = io_lib:format(<<"SELECT * FORM `xy_pet` WHERE pet_master_actor='~p'">>, [Actor#online_actor.id]),
-	FunPet = fun(Pet)-> << <<PetX:32>> || PetX<-Pet>>,
-						ASD = #actor_pet{
-										 	pid = PID,             				   %%在线角色的PID
-										    id = lists:nth(1, Pet),                %%宠物的ID
-											actor = lists:nth(2, Pet),             %%所属角色
-						                    fight = lists:nth(3, Pet),             %%是否参战 1未参战,2参战
-											grade = lists:nth(4, Pet),             %%等级
-											attack_min = lists:nth(5, Pet),        %%最小攻击
-											attack_max = lists:nth(6, Pet),        %%最大攻击
-											mattack_min = lists:nth(7, Pet),       %%最小魔法攻击
-											mattack_max = lists:nth(8, Pet),       %%最大魔法攻击
-											defense = lists:nth(9, Pet),           %%防御
-											mdefense = lists:nth(10, Pet),          %%魔法防御 
-											loyalty = lists:nth(11, Pet),		   %%忠诚度
-											hit = lists:nth(12, Pet),               %%命中率 
-											dodge = lists:nth(13, Pet),             %%闪避率
-											crit = lists:nth(14, Pet),              %%暴击率
-											batter = lists:nth(15, Pet),            %%连击率
-											attack_speed = lists:nth(16, Pet),      %%攻击速度
-											hp_max = lists:nth(17, Pet),            %%血槽
-											hp = lists:nth(18, Pet),                %%血量
-											mp_max = lists:nth(19, Pet),            %%魔槽
-											mp = lists:nth(20, Pet),                %%魔量
-											exp = lists:nth(21, Pet),               %%经验值
-											attack_talent = lists:nth(22, Pet),     %%攻击天赋
-						                    mattack_talent = lists:nth(23, Pet),    %%魔法攻击天赋
-											defense_talent = lists:nth(24, Pet),    %%防御天赋
-											mdefense_talent = lists:nth(25, Pet),   %%魔法防御天赋
-											hp_talent = lists:nth(26, Pet),         %%血量天赋
-											mp_talent = lists:nth(27, Pet),         %%魔量天赋
-										    attack_speed_talent = lists:nth(28, Pet),%%攻击速度天赋      
-											image = lists:nth(29, Pet),             %%形象
-											head = lists:nth(30, Pet)               %%头像ID
-										 },
-						io:format("enter game pet:~p~n",[ASD]),
-						ets:insert(?ETS_ACTOR_PET, ASD)
-			  end,
-	Actor_Pet_Bin = case mysql_lib:recv(ReadPet, ?DB_GAME) of
-						 [] ->
-							 <<0:32>>;
-						 PetList->
-							 Num = length(PetList),
-							 PList = [FunPet(P) ||P<-PetList],
-							 PList_Bin = list_to_binary(PList),
-							 <<Num:32, PList_Bin/binary>>
-	 				end,
-	
-	game_server:send(PID,<<10006:32,Actor_Info_Bin/binary,Actor_Pet_Bin/binary>>),
+	game_server:send(PID,<<10006:32, Actor_Info_Bin/binary>>),
+	ok.
+
+
+leave([PID]) ->
 	ok.
