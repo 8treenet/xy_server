@@ -1,14 +1,17 @@
-%% @author Administrator
-%% @doc @todo Add description to game_data_init.
+%%% @Module  : environment_lib
+%%% @Author  : ys
+%%% @Email   : 4932004@qq.com
+%%% @Created : 2013.05.29
+%%% @Description: 游戏环境相关
+%%%--------------------------------------
 
-
--module(game_init).
+-module(environment_lib).
 -include("record.hrl").
 -include("common.hrl").
 %% ====================================================================
 %% API functions
 %% ====================================================================
--export([start/0]).
+-export([init/0,save/0]).
 
 
 
@@ -16,9 +19,8 @@
 %% Internal functions
 %% ====================================================================
 
-
-start()->
-
+%%游戏全局初始化
+init() ->
 	ets:new(?ETS_ONLINE_USER, [public, set, named_table, 
 							  {keypos,#online_user.pid}, 
 							  {write_concurrency,true},
@@ -37,4 +39,7 @@ start()->
 							  {read_concurrency,true}]),                 %%初始化角色对应pid
 	config_data:init(),
 	ok.
-	
+
+%%游戏全局保存
+save() ->
+	config_data:save().

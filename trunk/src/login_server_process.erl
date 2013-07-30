@@ -5,7 +5,7 @@
 %%% @Created : 2013.05.29
 %%% @Description: 处理登陆服务器协议逻辑
 %%%--------------------------------------
--module(loginServer_mod).
+-module(login_server_process).
 
 %% ====================================================================
 %% API functions

@@ -77,7 +77,7 @@ handle_call(Request, From, State) ->
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
 handle_cast({player_recv,PID, Index ,Data}, State) ->
-	loginServer_mod:process([PID, Index ,Data]),
+	login_server_process:process([PID, Index ,Data]),
     {noreply, State};
 handle_cast(Msg, State) ->
     {noreply, State}.

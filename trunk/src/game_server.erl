@@ -32,7 +32,7 @@
 %% ====================================================================
 init([]) ->
 	process_flag(trap_exit, true),
-	game_init:start(),
+	environment_lib:init(),
 	io:format("game_server run~n"),
     {ok, #state{}}.
 
@@ -71,7 +71,7 @@ handle_call(Request, From, State) ->
 	Timeout :: non_neg_integer() | infinity.
 %% ====================================================================
 handle_cast({player_recv, PID, Index ,Data}, State) ->
-	gameServer_mod:process([PID, Index ,Data]),
+	game_server_process:process([PID, Index ,Data]),
     {noreply, State};
 handle_cast({player_error, Pid}, State) ->
     {noreply, State};
@@ -107,7 +107,7 @@ handle_info(Info, State) ->
 			| term().
 %% ====================================================================
 terminate(Reason, State) ->
-	game_save:start(),
+	environment_lib:save(),
 	io:format("game_server quit~n"),
     ok.
 
